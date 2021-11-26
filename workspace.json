@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "projects": {
+    "red-acre-tech-assignment": "apps/red-acre-tech-assignment",
+    "red-acre-tech-assignment-e2e": "apps/red-acre-tech-assignment-e2e"
+  }
+}

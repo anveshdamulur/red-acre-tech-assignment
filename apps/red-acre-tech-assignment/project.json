@@ -1,0 +1,74 @@
+{
+  "root": "apps/red-acre-tech-assignment",
+  "sourceRoot": "apps/red-acre-tech-assignment/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/web:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/red-acre-tech-assignment",
+        "index": "apps/red-acre-tech-assignment/src/index.html",
+        "baseHref": "/",
+        "main": "apps/red-acre-tech-assignment/src/main.tsx",
+        "polyfills": "apps/red-acre-tech-assignment/src/polyfills.ts",
+        "tsConfig": "apps/red-acre-tech-assignment/tsconfig.app.json",
+        "assets": [
+          "apps/red-acre-tech-assignment/src/favicon.ico",
+          "apps/red-acre-tech-assignment/src/assets"
+        ],
+        "styles": [],
+        "scripts": [],
+        "webpackConfig": "@nrwl/react/plugins/webpack"
+      },
+      "configurations": {
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/red-acre-tech-assignment/src/environments/environment.ts",
+              "with": "apps/red-acre-tech-assignment/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/web:dev-server",
+      "options": {
+        "buildTarget": "red-acre-tech-assignment:build",
+        "hmr": true
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "red-acre-tech-assignment:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "apps/red-acre-tech-assignment/**/*.{ts,tsx,js,jsx}"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/red-acre-tech-assignment"],
+      "options": {
+        "jestConfig": "apps/red-acre-tech-assignment/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

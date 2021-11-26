@@ -1,0 +1,28 @@
+{
+  "root": "apps/red-acre-tech-assignment-e2e",
+  "sourceRoot": "apps/red-acre-tech-assignment-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "e2e": {
+      "executor": "@nrwl/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/red-acre-tech-assignment-e2e/cypress.json",
+        "devServerTarget": "red-acre-tech-assignment:serve"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "red-acre-tech-assignment:serve:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/red-acre-tech-assignment-e2e/**/*.{js,ts}"]
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["red-acre-tech-assignment"]
+}
