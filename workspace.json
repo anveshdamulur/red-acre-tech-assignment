@@ -1,6 +1,7 @@
 {
   "version": 2,
   "projects": {
+    "express-app": "apps/express-app",
     "red-acre-tech-assignment": "apps/red-acre-tech-assignment",
     "red-acre-tech-assignment-e2e": "apps/red-acre-tech-assignment-e2e"
   }
