@@ -1,3 +1,5 @@
+import 'mapbox-gl/dist/mapbox-gl.css';
+
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom';
 
