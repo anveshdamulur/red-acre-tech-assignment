@@ -1,21 +1,123 @@
+import { Chip, List } from '@mui/material';
+import { SyntheticEvent, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import MapboxMap from './mapbox-map/mapbox-map';
+import MapboxMap, { CoordinatePoint } from './mapbox-map/mapbox-map';
+import MovementTimeRadioGroup from './movement-time-radio-group/movement-time-radio-group';
+import RouteItem from './route-item/route-item';
 
 const StyledApp = styled.div`
-  .map-container {
-    position: absolute;
+  .side-nav {
+    height: 100%;
+    width: 300px;
+    position: fixed;
+    z-index: 1;
     top: 0;
-    bottom: 0;
     left: 0;
-    right: 0;
+    background-color: #ed1c25;
+    overflow-x: hidden;
+
+    &__content {
+      padding: 20px;
+    }
   }
 `;
 
 const App = () => {
+  const timeInSecondsArray = [1, 5, 10];
+  const routes = [
+    'House -> Office',
+    'Office -> Lunch',
+    'Lunch -> Office',
+    'Office -> House',
+  ];
+  const datasets = [
+    '/assets/geojson/popeye-village-balluta.geojson',
+    '/assets/lunch.geojson',
+  ];
+
+  const [timeInSeconds, setTimeInSeconds] = useState(5);
+  const [selectedRoute, setSelectedRoute] = useState(routes[0]);
+  const [currentPositionOnMap, setCurrentPositionOnMap] =
+    useState<CoordinatePoint | null>(null);
+  useEffect(() => {
+    console.log('effect');
+    const wss = new WebSocket('ws://localhost:8080/');
+
+    const subscribe = {
+      event: 'pos:subscribe',
+      data: {
+        channel: selectedRoute,
+      },
+    };
+
+    let intervalId: NodeJS.Timeout | null = null;
+
+    wss.onmessage = (data) => {
+      console.log('message received: ', data.data);
+      if (data.data === '') return;
+
+      const [latitude, longitude] = JSON.parse(data.data);
+      setCurrentPositionOnMap({ latitude, longitude });
+    };
+
+    wss.onopen = () => {
+      console.log('ws opened');
+
+      try {
+        intervalId = setInterval(() => {
+          wss.send(JSON.stringify(subscribe));
+        }, timeInSeconds * 1000);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    wss.onclose = () => console.log('ws closed');
+    return () => {
+      wss.close();
+      clearInterval(Number(intervalId));
+    };
+  }, [timeInSeconds, selectedRoute]);
+
+  const handleRouteSelectionClick = (e: SyntheticEvent<Element, Event>) => {
+    const element = e.target as HTMLElement;
+    console.log(element.innerText);
+    setSelectedRoute(element.innerText);
+  };
+
+  const handleMovementTimeRadioGroupOnChange = (
+    e: SyntheticEvent<Element, Event>,
+    check: boolean
+  ) => {
+    const element = e.target as HTMLInputElement;
+    setTimeInSeconds(+element.value);
+  };
+
   return (
     <StyledApp>
-      <MapboxMap></MapboxMap>
+      <div className="side-nav">
+        <div className="side-nav__content">
+          <MovementTimeRadioGroup
+            timeInSeconds={timeInSecondsArray}
+            value={timeInSeconds}
+            handleChange={handleMovementTimeRadioGroupOnChange}
+          ></MovementTimeRadioGroup>
+          <List>
+            {routes.map((route) => (
+              <RouteItem
+                key={`route-item-${route.replace(/\s/g, '')}`}
+                text={route}
+                isSelected={route === selectedRoute}
+                handleClick={handleRouteSelectionClick}
+              ></RouteItem>
+            ))}
+          </List>
+        </div>
+      </div>
+      <MapboxMap
+        datasets={datasets}
+        currentPosition={currentPositionOnMap}
+      ></MapboxMap>
     </StyledApp>
   );
 };
