@@ -10,9 +10,10 @@ export interface CoordinatePoint {
   latitude: number;
   longitude: number;
 }
+
 /* eslint-disable-next-line */
 export interface MapboxMapProps {
-  datasets: string[];
+  selectedRoute: string;
   currentPosition: CoordinatePoint | null;
 }
 
@@ -38,7 +39,7 @@ const StyledMapboxMap = styled.div`
 mapboxgl.accessToken =
   'pk.eyJ1IjoiYW52ZXNoZGFtdWx1ciIsImEiOiJja3dndW9oYmQwc2M3MnBwbTk3aHk2ODhvIn0.cST7lXwv2m_th18JJnMq4g';
 
-const MapboxMap = ({ datasets, currentPosition }: MapboxMapProps) => {
+const MapboxMap = ({ selectedRoute, currentPosition }: MapboxMapProps) => {
   const mapContainerRef = useRef(null);
   const map = useRef<Map | null>(null);
   // const [map, setMap] = useState(null);
@@ -71,18 +72,16 @@ const MapboxMap = ({ datasets, currentPosition }: MapboxMapProps) => {
           currentMap?.addImage(name, img!);
         });
       });
-    });
 
-    return () => {
-      map?.current?.remove();
-    };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+      currentMap?.addSource('car-point', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: [],
+        },
+      });
 
-  useEffect(() => {
-    const currentMap = map?.current;
-
-    currentMap?.on('load', () => {
-      currentMap?.addSource('point', {
+      currentMap?.addSource('person-point', {
         type: 'geojson',
         data: {
           type: 'FeatureCollection',
@@ -149,16 +148,30 @@ const MapboxMap = ({ datasets, currentPosition }: MapboxMapProps) => {
 
       // Add a layer to use the image to represent the data.
       currentMap?.addLayer({
-        id: 'points',
+        id: 'car-points',
         type: 'symbol',
-        source: 'point', // reference the data source
+        source: 'car-point', // reference the data source
         layout: {
           'icon-image': 'car', // reference the image
           'icon-size': 0.15,
         },
       });
+
+      currentMap?.addLayer({
+        id: 'person-points',
+        type: 'symbol',
+        source: 'person-point', // reference the data source
+        layout: {
+          'icon-image': 'person', // reference the image
+          'icon-size': 0.05,
+        },
+      });
     });
-  }, [datasets]);
+
+    return () => {
+      map?.current?.remove();
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!currentPosition) return;
@@ -168,12 +181,35 @@ const MapboxMap = ({ datasets, currentPosition }: MapboxMapProps) => {
       currentPosition.longitude,
     ]);
     const featColl = turf.featureCollection([pointFeature]);
-    console.log('feat: ', featColl);
-    const source: mapboxgl.GeoJSONSource = map?.current?.getSource(
-      'point'
+
+    const carPointLayer = map?.current?.getSource(
+      'car-point'
     ) as mapboxgl.GeoJSONSource;
+    if (!carPointLayer) return;
+    carPointLayer.setData({
+      type: 'FeatureCollection',
+      features: [],
+    });
+
+    const personPointLayer = map?.current?.getSource(
+      'person-point'
+    ) as mapboxgl.GeoJSONSource;
+    if (!personPointLayer) return;
+    personPointLayer.setData({
+      type: 'FeatureCollection',
+      features: [],
+    });
+
+    const pointLayer =
+      selectedRoute === 'House -> Office' || selectedRoute === 'Office -> House'
+        ? 'car-point'
+        : 'person-point';
+    const source: mapboxgl.GeoJSONSource = map?.current?.getSource(
+      pointLayer
+    ) as mapboxgl.GeoJSONSource;
+    if (!source) return;
     source.setData(featColl);
-  }, [currentPosition]);
+  }, [currentPosition, selectedRoute]);
 
   return (
     <StyledMapboxMap>

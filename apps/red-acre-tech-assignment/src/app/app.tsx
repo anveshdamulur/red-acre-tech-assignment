@@ -1,4 +1,4 @@
-import { Chip, List } from '@mui/material';
+import { List } from '@mui/material';
 import { SyntheticEvent, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
@@ -31,17 +31,13 @@ const App = () => {
     'Lunch -> Office',
     'Office -> House',
   ];
-  const datasets = [
-    '/assets/geojson/popeye-village-balluta.geojson',
-    '/assets/lunch.geojson',
-  ];
 
   const [timeInSeconds, setTimeInSeconds] = useState(5);
   const [selectedRoute, setSelectedRoute] = useState(routes[0]);
   const [currentPositionOnMap, setCurrentPositionOnMap] =
     useState<CoordinatePoint | null>(null);
+
   useEffect(() => {
-    console.log('effect');
     const wss = new WebSocket('ws://localhost:8080/');
 
     const subscribe = {
@@ -65,13 +61,18 @@ const App = () => {
       console.log('ws opened');
 
       try {
-        intervalId = setInterval(() => {
-          wss.send(JSON.stringify(subscribe));
-        }, timeInSeconds * 1000);
+        intervalId = setInterval(
+          (function x() {
+            wss.send(JSON.stringify(subscribe));
+            return x;
+          })(),
+          timeInSeconds * 1000
+        );
       } catch (e) {
         console.error(e);
       }
     };
+
     wss.onclose = () => console.log('ws closed');
     return () => {
       wss.close();
@@ -115,7 +116,7 @@ const App = () => {
         </div>
       </div>
       <MapboxMap
-        datasets={datasets}
+        selectedRoute={selectedRoute}
         currentPosition={currentPositionOnMap}
       ></MapboxMap>
     </StyledApp>

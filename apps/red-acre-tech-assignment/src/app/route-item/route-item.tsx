@@ -13,7 +13,8 @@ const StyledRouteItem = styled.div<{ isSelected: boolean }>`
   color: #fff;
 
   .list-item {
-    background-color: ${(props) => (props.isSelected ? 'black' : '')};
+    background-color: ${(props) => (props.isSelected ? 'white' : '')};
+    color: ${(props) => (props.isSelected ? 'black' : 'white')};
   }
 `;
 
