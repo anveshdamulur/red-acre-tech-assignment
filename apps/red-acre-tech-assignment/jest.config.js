@@ -7,4 +7,5 @@ module.exports = {
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/apps/red-acre-tech-assignment',
+  setupFiles: ['<rootDir>/jest.stub.js'],
 };

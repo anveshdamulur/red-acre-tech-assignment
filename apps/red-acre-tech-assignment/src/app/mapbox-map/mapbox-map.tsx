@@ -1,6 +1,6 @@
 import * as turf from '@turf/turf';
 import mapboxgl, { Map } from 'mapbox-gl';
-import { RefObject, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 import carImage from '../../assets/img/car.png';
@@ -42,7 +42,6 @@ mapboxgl.accessToken =
 const MapboxMap = ({ selectedRoute, currentPosition }: MapboxMapProps) => {
   const mapContainerRef = useRef(null);
   const map = useRef<Map | null>(null);
-  // const [map, setMap] = useState(null);
 
   useEffect(() => {
     if (map.current) return; // initialize map only once

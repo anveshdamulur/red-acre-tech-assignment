@@ -1,6 +1,7 @@
 # Red-Acre Tech Assignment
 
 This project was generated using [Nx](https://nx.dev).
+Install Nx with `npm install -g nx`
 
 Programing:
 
@@ -24,20 +25,16 @@ The selected routes are:
 * 'Lunch -> Office'
 * 'Office -> House'
 
-## Development server
+## Front-End
 
 Run `npm start` for a dev server. Navigate to [localhost](http://localhost:4200/). The app will automatically reload if you change any of the source files.
 
-## Build
+## Back-End: Express Server
 
-Run `nx build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Run `nx serve express-app` to run the server.
+
+>Note: Run the back-end and front-end server to get the app working
 
 ## Running unit tests
 
 Run `npm test` to execute the unit tests via [Jest](https://jestjs.io).
-
-## Running end-to-end tests
-
-Run `ng e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
-
-Run `nx affected:e2e` to execute the end-to-end tests affected by a change.
